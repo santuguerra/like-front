@@ -4,7 +4,7 @@ import auth from '../auth'
 const logout = props => {
 
     auth.logout(() => {
-        props.history.push('/login')
+        // props.history.push('/login')
     })
 
 }
@@ -12,7 +12,7 @@ const logout = props => {
 export default ({ props }) => {
   return (
     <div>
-        <button onClick={ () => logout(props) }>Logout</button>
+        <button to="/login" onClick={ () => logout(props) }>Logout</button>
     </div>
   )
 }

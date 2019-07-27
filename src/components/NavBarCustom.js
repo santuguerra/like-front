@@ -12,6 +12,8 @@ import { withRouter } from 'react-router-dom';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import InputBase from '@material-ui/core/InputBase';
+import SearchIcon from '@material-ui/icons/Search';
 
 const LOGIN_PATH = '/login';
 const REGISTER_PATH = '/register';
@@ -30,8 +32,9 @@ const styles = {
 };
 
 function NavBarCustom(props) {
-  const { classes, location } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { classes, location } = props;
+
   const open = Boolean(anchorEl);
 
   const handleMenu = (event) => {
@@ -58,12 +61,10 @@ function NavBarCustom(props) {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h6" color="inherit" className={classes.grow}>
             Likes
           </Typography>
+          
           {!auth.isAuthenticated() ? 
             <div>
                 {location.pathname === REGISTER_PATH ? 
@@ -71,6 +72,7 @@ function NavBarCustom(props) {
                 <Button color="inherit" onClick={ () => goToLink(REGISTER_PATH) }>Registrate</Button> }
             </div> :
             <div>
+              {auth.getUser().email}
               <IconButton
                 aria-label="Account of current user"
                 aria-controls="menu-appbar"
@@ -97,7 +99,6 @@ function NavBarCustom(props) {
               >
                 <MenuItem onClick={() => handleClose('/')}>Home</MenuItem>
                 <MenuItem onClick={() => handleClose('/user')}>Mis likes</MenuItem>
-                <MenuItem onClick={() => handleClose('/myAccount')}>Mi cuenta</MenuItem>
                 <MenuItem onClick={() => logout(props)}>Deslogue</MenuItem>
               </Menu>
             </div>

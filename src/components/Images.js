@@ -3,17 +3,19 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
+import auth from '../auth';
+import config from '../config';
 const Unsplash = require('unsplash-js').default;
+
+const urlBack = config.getUrlBack()
 
 const unsplash = new Unsplash({
   applicationId: "12beee6970dc5ce3d51b24c289ab94074c1dea5582a6acd284881bc373981074",
@@ -26,11 +28,9 @@ const styles = theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    textAlign: 'center',
     backgroundColor: theme.palette.background.pape
   },
   box: {
-    textAlign: 'center'
   },
   gridList: {
     width: 500,
@@ -45,10 +45,12 @@ class Images extends Component {
 
   state = {
     photos: null,
+    likedImages: [],
     page: 1
   }
 
   componentDidMount() {
+    console.log("component images")
     this.images()
   }
 
@@ -58,6 +60,17 @@ class Images extends Component {
       .then(json => {
         this.setState({photos: json})
       });
+
+      auth.getLikes()
+        .then(data => this.setState({likedImages: data}))
+
+  }
+
+  isLikedImage = (tile) => {
+
+    const data = this.state.likedImages
+
+    return data !== null ? data.some(val => val.url === tile.id) : false
 
   }
 
@@ -69,15 +82,50 @@ class Images extends Component {
     this.setState({page: this.state.page - 1, photos: null}, () => this.images())
   }
 
+  handleLike(tile) {
+
+    fetch(urlBack + '/likes/' + auth.getUserId(), {
+      body: JSON.stringify({
+        url: tile.id
+      }),
+      method: 'post',
+      headers: {'Content-Type':'application/json'}
+    })
+    .then(response => {
+      console.log('like')
+      this.images()
+    })
+
+  }
+
+  handleDeleteLike(tile) {
+
+    fetch(urlBack + '/likes/' + auth.getUserId(), {
+      body: JSON.stringify({
+        url: tile.id
+      }),
+      method: 'delete',
+      headers: {'Content-Type':'application/json'}
+    })
+    .then(response => {
+      console.log('delete like')
+      this.images()
+    })
+
+  }
+
   render() {
     const classes = styles;
 
+    this.isLikedImage('url')
+
     return (
       <div className={classes.root}>
-        <Box component="main" textAlign="center" lineHeight={25} className={classes.box}>
+        <Container component="main" className={classes.box}>
+        <h1>Home</h1>
         { (this.state.photos !== null) ?
           <div>
-            <GridList className={classes.gridList} lineHeight={25}  cols='3'>
+            <GridList className={classes.gridList} cols={3}>
               {this.state.photos.map(tile => (
                 <GridListTile key={tile.id}>
                   <img src={tile.urls.small} alt={tile.user.username} />
@@ -86,8 +134,18 @@ class Images extends Component {
                     subtitle={<span>by: {tile.user.username}</span>}
                     actionIcon={
                       <IconButton color="primary" aria-label={`thumb_up about ${tile.title}`}>
-                        <ThumbUpIcon />
-                        <ThumbUpOutlinedIcon />
+                        {this.isLikedImage(tile) ?
+                          <div>
+                            <ThumbUpIcon onClick={() => {
+                              this.handleDeleteLike(tile)
+                            }} />
+                          </div> :
+                          <div>
+                            <ThumbUpOutlinedIcon onClick={() => {
+                              this.handleLike(tile)
+                            }} />
+                          </div>
+                        }
                       </IconButton>
                     }
                   />
@@ -117,7 +175,7 @@ class Images extends Component {
           :
           <CircularProgress className={classes.progress} />
         }
-        </Box>
+        </Container>
     </div>
     )
   }
