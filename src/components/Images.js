@@ -11,17 +11,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
+import TextField from '@material-ui/core/TextField';
 import auth from '../auth';
 import config from '../config';
-const Unsplash = require('unsplash-js').default;
+import unsplash from '../unsplash'
 
 const urlBack = config.getUrlBack()
-
-const unsplash = new Unsplash({
-  applicationId: "12beee6970dc5ce3d51b24c289ab94074c1dea5582a6acd284881bc373981074",
-  secret: "faa4a482b1bdd4b1166fa7688ceaef08b2723507ef8b5badcd0f1f7b6460245e"
-});
-
+ 
 const styles = theme => ({
   root: {
     display: 'flex',
@@ -46,7 +42,8 @@ class Images extends Component {
   state = {
     photos: null,
     likedImages: [],
-    page: 1
+    page: 1,
+    search: ''
   }
 
   componentDidMount() {
@@ -55,14 +52,30 @@ class Images extends Component {
   }
 
   images = () => {
-    unsplash.photos.listPhotos(this.state.page, 6, "latest")
+
+    if (this.state.search === '') {
+
+      unsplash.photos.listPhotos(this.state.page, 6, "latest")
       .then(response => response.json())
       .then(json => {
         this.setState({photos: json})
       });
 
-      auth.getLikes()
-        .then(data => this.setState({likedImages: data}))
+    } else {
+
+      console.log(this.state.search)
+
+      unsplash.search.photos(this.state.search, this.state.page, 6)
+      .then(response => response.json())
+      .then(json => {
+        //console.log(json)
+        this.setState({photos: json.results})
+      });
+
+    }
+
+    auth.getLikes()
+      .then(data => this.setState({likedImages: data}))
 
   }
 
@@ -80,6 +93,14 @@ class Images extends Component {
 
   handleBack = () => {
     this.setState({page: this.state.page - 1, photos: null}, () => this.images())
+  }
+
+  handleChange = name => event => {
+    this.setState({ [name]: event.target.value } );
+  };
+
+  handleSearch = () => {
+                                                  this.images()
   }
 
   handleLike(tile) {
@@ -122,7 +143,19 @@ class Images extends Component {
     return (
       <div className={classes.root}>
         <Container component="main" className={classes.box}>
+        
         <h1>Home</h1>
+        <TextField
+          id="standard-name"
+          label="Buscar"
+          className={classes.textField}
+          value={this.state.search}
+          onChange={this.handleChange('search')}
+        />
+        <Button variant="contained" onClick={this.handleSearch} color="primary" className={classes.button}>
+          Buscar
+        </Button>
+        
         { (this.state.photos !== null) ?
           <div>
             <GridList className={classes.gridList} cols={3}>

@@ -9,14 +9,10 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
 import auth from '../auth';
 import config from '../config';
+import unsplash from '../unsplash'
 const Unsplash = require('unsplash-js').default;
 
 const urlBack = config.getUrlBack()
-
-const unsplash = new Unsplash({
-  applicationId: "12beee6970dc5ce3d51b24c289ab94074c1dea5582a6acd284881bc373981074",
-  secret: "faa4a482b1bdd4b1166fa7688ceaef08b2723507ef8b5badcd0f1f7b6460245e"
-});
 
 const styles = theme => ({
   root: {
