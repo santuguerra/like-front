@@ -16,7 +16,7 @@ import auth from '../auth';
 import config from '../config';
 import unsplash from '../unsplash'
 import { connect } from 'react-redux'
-import { addLiked } from '../common/actions/actions'
+import { addLiked, removeLiked, handleChange } from '../common/actions/actions'
 
 const urlBack = config.getUrlBack()
  
@@ -43,6 +43,14 @@ let createHandlers = function(dispatch) {
 
   const handleLike = (tile, callback) => {
     dispatch(addLiked(tile, callback))
+  }
+
+  const handleRemoveLike = (tile, callback) => {
+    dispatch(removeLiked(tile, callback))
+  }
+
+  const handleChangeValue = (name, event) => {
+    dispatch(handleCange(name, event))
   }
 
   return {
@@ -118,23 +126,7 @@ class Images extends Component {
   };
 
   handleSearch = () => {
-                                                  this.images()
-  }
-
-  handleDeleteLike(tile) {
-
-    fetch(urlBack + '/likes/' + auth.getUserId(), {
-      body: JSON.stringify({
-        url: tile.id
-      }),
-      method: 'delete',
-      headers: {'Content-Type':'application/json'}
-    })
-    .then(response => {
-      console.log('delete like')
-      this.images()
-    })
-
+    this.images()
   }
 
   render() {
@@ -172,7 +164,7 @@ class Images extends Component {
                         {this.isLikedImage(tile) ?
                           <div>
                             <ThumbUpIcon onClick={() => {
-                              this.handleDeleteLike(tile)
+                              this.handlers.handleDeleteLike(tile, () => this.images())
                             }} />
                           </div> :
                           <div>

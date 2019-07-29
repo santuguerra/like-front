@@ -16,13 +16,31 @@ function like(state = [], action) {
           headers: {'Content-Type':'application/json'}
         })
         .then(response => {
-          console.log('like reduxxx')
+          console.log('like redux')
           action.callback() //this.images()
         })
         return state
     case REMOVE_LIKED:
+        fetch(urlBack + '/likes/' + auth.getUserId(), {
+          body: JSON.stringify({
+            url: action.tile.id
+          }),
+          method: 'delete',
+          headers: {'Content-Type':'application/json'}
+        })
+        .then(response => {
+          console.log('delete like redux')
+          action.callback() //this.images()
+        })
       return state
     case GET_LIST_LIKED:
+      return state
+    case HANDLE_CHANGE_VALUES:
+      let name = action.name
+      let event = action.event
+      //handleChange = name => event => {
+      //    this.setState({ [name]: event.target.value } );
+      //  };
       return state
     default:
       return state
