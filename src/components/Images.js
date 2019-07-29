@@ -15,6 +15,8 @@ import TextField from '@material-ui/core/TextField';
 import auth from '../auth';
 import config from '../config';
 import unsplash from '../unsplash'
+import { connect } from 'react-redux'
+import { addLiked } from '../common/actions/actions'
 
 const urlBack = config.getUrlBack()
  
@@ -37,7 +39,23 @@ const styles = theme => ({
   },
 });
 
+let createHandlers = function(dispatch) {
+
+  const handleLike = (tile, callback) => {
+    dispatch(addLiked(tile, callback))
+  }
+
+  return {
+    handleLike,
+  };
+}
+
 class Images extends Component {
+
+  constructor(props) {
+    super(props);
+    this.handlers = createHandlers(this.props.dispatch);
+  }
 
   state = {
     photos: null,
@@ -90,7 +108,7 @@ class Images extends Component {
   handleNext = () => {
     this.setState({page: this.state.page + 1, photos: null}, () => this.images())
   }
-
+  
   handleBack = () => {
     this.setState({page: this.state.page - 1, photos: null}, () => this.images())
   }
@@ -101,22 +119,6 @@ class Images extends Component {
 
   handleSearch = () => {
                                                   this.images()
-  }
-
-  handleLike(tile) {
-
-    fetch(urlBack + '/likes/' + auth.getUserId(), {
-      body: JSON.stringify({
-        url: tile.id
-      }),
-      method: 'post',
-      headers: {'Content-Type':'application/json'}
-    })
-    .then(response => {
-      console.log('like')
-      this.images()
-    })
-
   }
 
   handleDeleteLike(tile) {
@@ -175,7 +177,7 @@ class Images extends Component {
                           </div> :
                           <div>
                             <ThumbUpOutlinedIcon onClick={() => {
-                              this.handleLike(tile)
+                              this.handlers.handleLike(tile, () => this.images())
                             }} />
                           </div>
                         }
@@ -215,4 +217,4 @@ class Images extends Component {
 }
 
 
-export default Images
+export default connect()(Images);

@@ -10,7 +10,6 @@ import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
 import auth from '../auth';
 import config from '../config';
 import unsplash from '../unsplash'
-const Unsplash = require('unsplash-js').default;
 
 const urlBack = config.getUrlBack()
 
