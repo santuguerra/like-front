@@ -11,6 +11,9 @@ import { withRouter } from 'react-router-dom';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { connect } from 'react-redux'
+import likeAppRedux from '../common/reducers/reducers'
 
 const LOGIN_PATH = '/login';
 const REGISTER_PATH = '/register';
@@ -53,6 +56,7 @@ function NavBarCustom(props) {
         props.history.push(LOGIN_PATH)
     })
   }
+  console.log(props.loading)
 
   return (
     <div className={classes.root}>
@@ -101,6 +105,7 @@ function NavBarCustom(props) {
             </div>
           }
         </Toolbar>
+        {props.loading.loading === true ? <LinearProgress /> : <div></div> }
       </AppBar>
     </div>
   );
@@ -110,4 +115,10 @@ NavBarCustom.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withRouter(NavBarCustom));
+const mapStateToProps = function(state) {
+  return {
+    loading: state.loading
+  }
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(withRouter(NavBarCustom)));

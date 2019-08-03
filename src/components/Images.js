@@ -1,21 +1,16 @@
 import React, { Component } from 'react'
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Container from '@material-ui/core/Container';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import IconButton from '@material-ui/core/IconButton';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp'
-import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
 import TextField from '@material-ui/core/TextField';
 import auth from '../auth';
 import unsplash from '../unsplash'
 import { connect } from 'react-redux'
-import { addLiked, removeLiked, getListLiked } from '../common/actions/actions'
+import ImagesList from './ImagesList'
+import { setLoading } from '../common/actions/actions'
  
 const styles = theme => ({
   root: {
@@ -38,17 +33,12 @@ const styles = theme => ({
 
 let createHandlers = function(dispatch) {
 
-  const handleLike = (tile, callback) => {
-    dispatch(addLiked(tile, callback))
-  }
-
-  const handleDeleteLike = (tile, callback) => {
-    dispatch(removeLiked(tile, callback))
+  const handleLoading = (loading) => {
+    dispatch(setLoading(loading))
   }
 
   return {
-    handleLike,
-    handleDeleteLike,
+    handleLoading
   };
 }
 
@@ -67,7 +57,6 @@ class Images extends Component {
   }
 
   componentDidMount() {
-    console.log("component images")
     this.images()
   }
 
@@ -146,33 +135,15 @@ class Images extends Component {
         
         { (this.state.photos !== null) ?
           <div>
-            <GridList className={classes.gridList} cols={3}>
-              {this.state.photos.map(tile => (
-                <GridListTile key={tile.id}>
-                  <img src={tile.urls.small} alt={tile.user.username} />
-                  <GridListTileBar
-                    title={tile.user.name}
-                    subtitle={<span>by: {tile.user.username}</span>}
-                    actionIcon={
-                      <IconButton color="primary" aria-label={`thumb_up about ${tile.title}`}>
-                        {this.isLikedImage(tile) ?
-                          <div>
-                            <ThumbUpIcon onClick={() => {
-                              this.handlers.handleDeleteLike(tile, () => this.images())
-                            }} />
-                          </div> :
-                          <div>
-                            <ThumbUpOutlinedIcon onClick={() => {
-                              this.handlers.handleLike(tile, () => this.images())
-                            }} />
-                          </div>
-                        }
-                      </IconButton>
-                    }
-                  />
-                </GridListTile>
-              ))}
-              </GridList>
+              <ImagesList 
+                classes={classes}
+                photos={this.state.photos}
+                likedImages={this.state.likedImages}
+                callbackImages={() => {
+                  this.images()
+                  this.handlers.handleLoading(false)
+                }}
+              />
               <MobileStepper
                 variant="dots"
                 steps={0}

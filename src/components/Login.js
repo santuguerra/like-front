@@ -3,8 +3,6 @@ import { Redirect } from 'react-router-dom'
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -103,10 +101,6 @@ export default class Login extends Component {
             onChange={this.handleChange('password')}
           />
           { this.state.errorMessage !== '' ? <p>{ this.state.errorMessage }</p> : '' }
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Recuerdeme"
-          />
           <Button 
             //type="submit"
             onClick={loginEmail}

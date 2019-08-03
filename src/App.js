@@ -18,7 +18,7 @@ function App() {
           <Route exact path='/login' component={ Login } />
           <Route exact path='/register' component={ Register } />
           <Route path='*' component={() => '404 not found'} />
-      </Switch> 
+      </Switch>
     </div>
   );
 }

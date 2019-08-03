@@ -1,17 +1,11 @@
 import React, { Component } from 'react'
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
 import Container from '@material-ui/core/Container';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import IconButton from '@material-ui/core/IconButton';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp'
-import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
 import auth from '../auth';
-import config from '../config';
+import ImagesList from './ImagesList'
 import unsplash from '../unsplash'
-
-const urlBack = config.getUrlBack()
+import { connect } from 'react-redux'
+import { setLoading } from '../common/actions/actions'
 
 const styles = theme => ({
   root: {
@@ -32,7 +26,23 @@ const styles = theme => ({
   },
 });
 
+let createHandlers = function(dispatch) {
+
+  const handleLoading = (loading) => {
+    dispatch(setLoading(loading))
+  }
+
+  return {
+    handleLoading
+  };
+}
+
 class Profile extends Component {
+
+  constructor(props) {
+    super(props)
+    this.handlers = createHandlers(this.props.dispatch)
+  }
 
   state = {
     likedImages: [],
@@ -78,38 +88,6 @@ class Profile extends Component {
 
   }
 
-  handleLike(tile) {
-
-    fetch(urlBack + '/likes/' + auth.getUserId(), {
-      body: JSON.stringify({
-        url: tile.id
-      }),
-      method: 'post',
-      headers: {'Content-Type':'application/json'}
-    })
-    .then(response => {
-      console.log('Liked photo')
-      this.images()
-    })
-
-  }
-
-  handleDeleteLike(tile) {
-
-    fetch(urlBack + '/likes/' + auth.getUserId(), {
-      body: JSON.stringify({
-        url: tile.id
-      }),
-      method: 'delete',
-      headers: {'Content-Type':'application/json'}
-    })
-    .then(response => {
-      console.log('delete like')
-      this.images()
-    })
-
-  }
-
   render() {
     const classes = styles;
 
@@ -119,36 +97,18 @@ class Profile extends Component {
       <div className={classes.root}>
         <Container component="main" className={classes.box}>
           <h1>Mis likes</h1>
-        { (this.state.photos !== null) ?
+        { (this.state.images !== null) ?
           <div>
-            <GridList className={classes.gridList} cols={3}>
-              {this.state.images.map(tile => (
-                <GridListTile key={tile.id}>
-                  <img src={tile.urls.small} alt={tile.user.username} />
-                  <GridListTileBar
-                    title={tile.user.name}
-                    subtitle={<span>by: {tile.user.username}</span>}
-                    actionIcon={
-                      <IconButton color="primary" aria-label={`thumb_up about ${tile.title}`}>
-                        {this.isLikedImage(tile) ?
-                          <div>
-                            <ThumbUpIcon onClick={() => {
-                              this.handleDeleteLike(tile)
-                            }} />
-                          </div> :
-                          <div>
-                            <ThumbUpOutlinedIcon onClick={() => {
-                              this.handleLike(tile)
-                            }} />
-                          </div>
-                        }
-                      </IconButton>
-                    }
-                  />
-                </GridListTile>
-              ))}
-              </GridList>
-            </div>
+            <ImagesList 
+                classes={classes}
+                photos={this.state.images}
+                likedImages={this.state.likedImages}
+                callbackImages={() => {
+                  this.images()
+                  this.handlers.handleLoading(false)
+                }}
+              />
+          </div>
           :
           <CircularProgress className={classes.progress} />
         }
@@ -159,4 +119,4 @@ class Profile extends Component {
 }
 
 
-export default Profile
+export default connect()(Profile)
