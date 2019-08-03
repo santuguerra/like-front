@@ -15,12 +15,23 @@ function like(state = [], action) {
           method: 'post',
           headers: {'Content-Type':'application/json'}
         })
-        .then(response => {
-          console.log('like reduxxx')
+        .then(() => {
+          console.log('like redux')
           action.callback() //this.images()
         })
         return state
     case REMOVE_LIKED:
+        fetch(urlBack + '/likes/' + auth.getUserId(), {
+          body: JSON.stringify({
+            url: action.tile.id
+          }),
+          method: 'delete',
+          headers: {'Content-Type':'application/json'}
+        })
+        .then(() => {
+          console.log('delete like r<edux')
+          action.callback() //this.images()
+        })
       return state
     case GET_LIST_LIKED:
       return state

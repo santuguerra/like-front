@@ -13,12 +13,9 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined'
 import TextField from '@material-ui/core/TextField';
 import auth from '../auth';
-import config from '../config';
 import unsplash from '../unsplash'
 import { connect } from 'react-redux'
-import { addLiked } from '../common/actions/actions'
-
-const urlBack = config.getUrlBack()
+import { addLiked, removeLiked, getListLiked } from '../common/actions/actions'
  
 const styles = theme => ({
   root: {
@@ -45,8 +42,13 @@ let createHandlers = function(dispatch) {
     dispatch(addLiked(tile, callback))
   }
 
+  const handleDeleteLike = (tile, callback) => {
+    dispatch(removeLiked(tile, callback))
+  }
+
   return {
     handleLike,
+    handleDeleteLike,
   };
 }
 
@@ -118,23 +120,7 @@ class Images extends Component {
   };
 
   handleSearch = () => {
-                                                  this.images()
-  }
-
-  handleDeleteLike(tile) {
-
-    fetch(urlBack + '/likes/' + auth.getUserId(), {
-      body: JSON.stringify({
-        url: tile.id
-      }),
-      method: 'delete',
-      headers: {'Content-Type':'application/json'}
-    })
-    .then(response => {
-      console.log('delete like')
-      this.images()
-    })
-
+    this.images()
   }
 
   render() {
@@ -172,7 +158,7 @@ class Images extends Component {
                         {this.isLikedImage(tile) ?
                           <div>
                             <ThumbUpIcon onClick={() => {
-                              this.handleDeleteLike(tile)
+                              this.handlers.handleDeleteLike(tile, () => this.images())
                             }} />
                           </div> :
                           <div>

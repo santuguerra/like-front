@@ -148,25 +148,6 @@ class Profile extends Component {
                 </GridListTile>
               ))}
               </GridList>
-              {/* <MobileStepper
-                variant="dots"
-                steps={0}
-                position="static"
-                activeStep={this.state.activeStep}
-                className={classes.root}
-                nextButton={
-                  <Button size="small" onClick={this.handleNext} disabled={this.state.activeStep === 4}>
-                    Next
-                    <KeyboardArrowRight />
-                  </Button>
-                }
-                backButton={
-                  <Button size="small" onClick={this.handleBack} disabled={this.state.activeStep === 0}>
-                    <KeyboardArrowLeft />
-                    Back
-                  </Button>
-                }
-              /> */}
             </div>
           :
           <CircularProgress className={classes.progress} />

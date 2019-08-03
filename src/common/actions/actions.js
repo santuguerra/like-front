@@ -14,8 +14,8 @@ export function addLiked (tile, callback) {
   return { type: ADD_LIKED, tile, callback }
 }
 
-export function removeLiked (like) {
-  return { type: REMOVE_LIKED, like}
+export function removeLiked (tile, callback) {
+  return { type: REMOVE_LIKED, tile, callback}
 }
 
 export function getListLiked () {
